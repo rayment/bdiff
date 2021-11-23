@@ -9,6 +9,8 @@ DEBUG:=0
 VERSION:=1.0.0
 BINARY:=bdiff
 
+PREFIX:=/usr/local
+
 CC:=gcc
 LD:=$(CC)
 
@@ -43,8 +45,15 @@ dist:
 	tar -cJf $(BINARY)-$(VERSION).tar.xz $(BINARY)-$(VERSION)
 	rm -rf $(BINARY)-$(VERSION)
 
+install:
+	install -d $(PREFIX)/bin
+	install -m 751 build/$(BINARY) $(PREFIX)/bin/$(BINARY)
+
+uninstall:
+	rm -f $(PREFIX)/bin/$(BINARY)
+
 clean:
 	rm -rf build obj $(BINARY)
 
-.PHONY: all dist clean
+.PHONY: all dist install uninstall clean
 
