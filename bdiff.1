@@ -1,0 +1,37 @@
+.Dd November 23, 2021
+.Dt BDIFF 1
+.Os
+.Sh NAME
+.Nm bdiff
+.Nd compare two binary files byte by byte
+.Sh SYNOPSIS
+.Nm
+.Op Fl c
+.Op Fl l Ar count
+.Op Fl h
+.Op Fl v
+.Ar file1
+.Ar file2
+.Sh DESCRIPTION
+.Nm
+reads two files in byte blocks and prints any block that does not match between
+the two files.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl c
+Show coloured output by highlighting byte differences in solid red.
+.It Fl l Ar count
+Override the maximum number of lines to output. Useful for larger files. If
+.Ar count
+is set to any value less than positive 1, every different block will be
+outputted for the entire file.
+.It Fl h
+Show the program help message and exit.
+.It Fl v
+Print the program version and exit.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh AUTHOR
+.An Written by Finn Rayment <finn@rayment.fr>

@@ -10,6 +10,7 @@ VERSION:=1.0.0
 BINARY:=bdiff
 
 PREFIX:=/usr/local
+MAN_PREFIX:=/usr/local/man
 
 CC:=gcc
 LD:=$(CC)
@@ -27,7 +28,7 @@ CSOURCES:=$(wildcard src/*.c) $(wildcard src/*/*.c)
 COBJECTS:=$(patsubst src/%,obj/%,$(patsubst %.c,%.o,$(CSOURCES)))
 INCLUDE:=
 
-DISTFILES:=Makefile
+DISTFILES:=Makefile $(BINARY).1
 DISTDIRS:=src
 
 all: $(COBJECTS)
@@ -48,9 +49,12 @@ dist:
 install:
 	install -d $(PREFIX)/bin
 	install -m 751 build/$(BINARY) $(PREFIX)/bin/$(BINARY)
+	install -d $(MAN_PREFIX)/man1
+	install -m 644 $(BINARY).1 $(MAN_PREFIX)/man1/$(BINARY).1
 
 uninstall:
 	rm -f $(PREFIX)/bin/$(BINARY)
+	rm -f $(MAN_PREFIX)/man1/$(BINARY).1
 
 clean:
 	rm -rf build obj $(BINARY)
