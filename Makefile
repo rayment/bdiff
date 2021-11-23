@@ -17,7 +17,7 @@ LD:=$(CC)
 
 CCFLAGS:=--std=c89
 CXXFLAGS:=-Wall -Wextra -Wpedantic -Werror --pedantic-errors \
-          -O3 -DVERSION=\"${VERSION}\"
+          -O3 -DVERSION=\"${VERSION}\" -D_POSIX_C_SOURCE=2
 LDFLAGS:=
 
 ifeq ($(DEBUG),1)
