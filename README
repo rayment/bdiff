@@ -1,0 +1,23 @@
+bdiff - compare two binary files byte by byte
+
+---------------------------------------------------
+
+bdiff is a simple UNIX program that acts like `diff' except it works on
+binary-based files by comparing each byte of a given file to the byte in the
+corresponding position of another given file.
+
+bdiff is licensed under BSD 3-Clause.
+All license information is available in the included COPYING file.
+
+USAGE
+-----
+
+Usage: ./build/bdiff [options] <file1> <file2>
+Compare two binary files byte by byte.
+
+Options:
+    -c      show coloured output
+    -h      print this help message
+    -l      set number of lines to output, or < 1 for infinite
+    -v      print the program version
+
