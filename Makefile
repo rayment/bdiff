@@ -28,7 +28,7 @@ CSOURCES:=$(wildcard src/*.c) $(wildcard src/*/*.c)
 COBJECTS:=$(patsubst src/%,obj/%,$(patsubst %.c,%.o,$(CSOURCES)))
 INCLUDE:=
 
-DISTFILES:=Makefile
+DISTFILES:=Makefile COPYING README
 DISTDIRS:=man src
 
 all: $(COBJECTS)
