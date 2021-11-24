@@ -84,7 +84,7 @@ print_block(unsigned char bufa[BLOCK_WIDTH],
             size_t block,
             int color)
 {
-	fprintf(stdout, "%ld-%ld:\n", block*BLOCK_WIDTH, (block+1)*BLOCK_WIDTH);
+	fprintf(stdout, "%ld-%ld:\n", block*BLOCK_WIDTH+1, (block+1)*BLOCK_WIDTH);
 	print_buffer(bufa, flags, color, -1);
 	print_buffer(bufb, flags, color, 1);
 }
@@ -108,7 +108,7 @@ run(char *file_a,
 		return EXIT_FAILURE;
 	}
 
-	block = 1;
+	block = 0;
 	hits = 0;
 	while (1)
 	{
