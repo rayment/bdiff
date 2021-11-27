@@ -7,8 +7,9 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl c
-.Op Fl l Ar count
+.Op Fl g Ar num
 .Op Fl h
+.Op Fl l Ar count
 .Op Fl v
 .Ar file1
 .Ar file2
@@ -21,17 +22,24 @@ The options are as follows:
 .Bl -tag -width Ds
 .It Fl c
 Show coloured output by highlighting byte differences in solid red.
+.It Fl g Ar num
+Set the number of bytes to be displayed in a single group without spacing in the
+ouput. The default size is 2. Setting
+.Ar num
+to 0 will display all bytes with no spacing.
+.It Fl h
+Show the program help message and exit.
 .It Fl l Ar count
 Override the maximum number of lines to output. Useful for larger files. If
 .Ar count
 is set to any value less than positive 1, every different block will be
 outputted for the entire file.
-.It Fl h
-Show the program help message and exit.
 .It Fl v
 Print the program version and exit.
 .El
 .Sh EXIT STATUS
 .Ex -std
+.Sh VERSION
+This man document is applicable to bdiff version 1.1.0.
 .Sh AUTHOR
 .An Written by Finn Rayment <finn@rayment.fr>
