@@ -19,6 +19,6 @@ Options:
     -c      show coloured output
     -g n    num. bytes per output group (default 2)
     -h      print this help message
-    -l n    set number of lines to output, or < 1 for infinite
+    -l n    num. lines to output (default 4, use 0 for infinite)
     -v      print the program version
 

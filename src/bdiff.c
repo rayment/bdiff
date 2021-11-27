@@ -24,7 +24,8 @@ usage(char *argv)
 	fprintf(stderr, "    -g n    num. bytes per output group (default 2)\n");
 	fprintf(stderr, "    -h      print this help message\n");
 	fprintf(stderr,
-	        "    -l n    set number of lines to output, or < 1 for infinite\n");
+	        "    -l n    num. lines to output "
+	        "(default 4, use 0 for infinite)\n");
 	fprintf(stderr, "    -v      print the program version\n");
 	return EXIT_FAILURE;
 }
@@ -38,8 +39,19 @@ min(int a,
 	return b;
 }
 
+int
+max(int a,
+    int b)
+{
+	if (a > b)
+		return a;
+	return b;
+}
+
 void
 print_buffer(unsigned char buf[BLOCK_WIDTH],
+             int rdmain,
+             int rdother,
              int flags[BLOCK_WIDTH],
              int color,
              int group,
@@ -54,11 +66,14 @@ print_buffer(unsigned char buf[BLOCK_WIDTH],
 		fputs("< ", stdout);
 	for (i = j = 0; i < BLOCK_WIDTH; ++i)
 	{
-		if (color && *(flags+i))
+		if (color && *(flags+i) && i < max(rdmain, rdother))
 			fputs("\x1b[1;31m", stdout);
 		else
 			fputs("\x1b[0m", stdout);
-		fprintf(stdout, "%02x", *(buf+i));
+		if (i < rdmain)
+			fprintf(stdout, "%02x", *(buf+i));
+		else
+			fputs("..", stdout);
 		if (i < BLOCK_WIDTH - 1 && j == group - 1)
 		{
 			fputc(' ', stdout);
@@ -72,7 +87,7 @@ print_buffer(unsigned char buf[BLOCK_WIDTH],
 	fputs("  ", stdout);
 	for (i = 0; i < BLOCK_WIDTH; ++i)
 	{
-		if (color && *(flags+i))
+		if (color && *(flags+i) && i < max(rdmain, rdother))
 			fputs("\x1b[1;31m", stdout);
 		else
 			fputs("\x1b[0m", stdout);
@@ -89,14 +104,19 @@ print_buffer(unsigned char buf[BLOCK_WIDTH],
 void
 print_block(unsigned char bufa[BLOCK_WIDTH],
             unsigned char bufb[BLOCK_WIDTH],
+            int rda,
+            int rdb,
             int flags[BLOCK_WIDTH],
             size_t block,
             int color,
             int group)
 {
-	fprintf(stdout, "%ld-%ld:\n", block*BLOCK_WIDTH+1, (block+1)*BLOCK_WIDTH);
-	print_buffer(bufa, flags, color, group, -1);
-	print_buffer(bufb, flags, color, group, 1);
+	size_t start, end;
+	start = block*BLOCK_WIDTH+1;
+	end = (block+1)*BLOCK_WIDTH - (BLOCK_WIDTH - max(rda, rdb));
+	fprintf(stdout, "%ld-%ld:\n", start, end);
+	print_buffer(bufa, rda, rdb, flags, color, group, -1);
+	print_buffer(bufb, rdb, rda, flags, color, group, 1);
 }
 
 int
@@ -108,8 +128,7 @@ run(char *file_a,
 {
 	FILE *fa, *fb;
 	unsigned char bufa[BLOCK_WIDTH], bufb[BLOCK_WIDTH];
-	int flags[BLOCK_WIDTH];
-	int rda, rdb, i, dirty;
+	int rda, rdb, i, dirty, eof, flags[BLOCK_WIDTH];
 	size_t block;
 	ssize_t hits;
 
@@ -121,6 +140,7 @@ run(char *file_a,
 
 	block = 0;
 	hits = 0;
+	eof = 0;
 	while (1)
 	{
 		dirty = 0;
@@ -144,17 +164,26 @@ run(char *file_a,
 				dirty = 1;
 			}
 		}
+		if (feof(fa) || feof(fb))
+		{
+			/* remove trailing \n char */
+			--rda;
+			--rdb;
+			*(bufa+rda) = 0;
+			*(bufb+rdb) = 0;
+			eof = 1;
+		}
 		if (dirty)
 		{
 			++hits;
-			if (hits < limit || limit <= 0)
-				print_block(bufa, bufb, flags, block, color, group);
+			if (hits <= limit || limit <= 0)
+				print_block(bufa, bufb, rda, rdb, flags, block, color, group);
 		}
 		++block;
-		if (feof(fa) || feof(fb))
+		if (eof)
 			break;
 	}
-	if (hits >= limit && limit > 0)
+	if (hits > limit && limit > 0)
 		fprintf(stdout, "... and %ld more.\n", hits - limit);
 
 	if (fclose(fa) != 0 || fclose(fb) != 0)
